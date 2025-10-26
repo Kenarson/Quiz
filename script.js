@@ -5,6 +5,9 @@ let container_start_h3 = document.querySelector('.container_h3')
 let container_main = document.querySelector('.main')
 let container_start = document.querySelector('.start')
 let start_button = document.querySelector('.start-btn')
+let timer_div = document.querySelector('.timer')
+
+// adsfghj
 
 function randint(min, max) {
     return Math.round(Math.random() * (max - min) + min)
@@ -28,6 +31,19 @@ if (cookie) {
     let data = cookie.split('/');
     container_start_h3.innerHTML = `<h3>Last time you gave ${data[1]} correct answers out of ${data[0]}. Accuracy is ${Math.round(data[1] * 100 / data[0])}%.</h3>`;
 }   
+
+let timerInterval;
+
+function endGame() {
+    let new_cookie = `numbers_high_score=${total_answers_given}/${correct_answers_given}; max-age=31536000;`;
+    document.cookie = new_cookie;
+
+    container_main.style.display = 'none';
+    container_start.style.display = 'flex';
+    container_start_h3.innerHTML = `<h3>You have given ${correct_answers_given} correct answers out of ${total_answers_given}. Accuracy is ${Math.round(correct_answers_given * 100 / total_answers_given)}%.</h3>`;
+    clearInterval(timerInterval);
+}
+
 start_button.addEventListener('click', function() {
     container_start.style.display = 'none';
     container_main.style.display = 'flex';
@@ -37,14 +53,16 @@ start_button.addEventListener('click', function() {
     correct_answers_given = 0;
     total_answers_given = 0;
 
-    setTimeout(function() {
-        let new_cookie = `numbers_high_score=${total_answers_given}/${correct_answers_given}; max-age=31536000;`;
-        document.cookie = new_cookie;
+    let time_left = 10;
+    timer_div.innerHTML = time_left;
 
-        container_main.style.display = 'none';
-        container_start.style.display = 'flex';
-        container_start_h3.innerHTML = `<h3>You have given ${correct_answers_given} correct answers out of ${total_answers_given}. Accuracy is ${Math.round(correct_answers_given * 100 / total_answers_given)}%.</h3>`;
-    }, 10000);
+    timerInterval = setInterval(function() {
+        time_left--;
+        timer_div.innerHTML = time_left;
+        if (time_left == 0) {
+            endGame();
+        }
+    }, 1000);
 });
 
 function shuffle(array) {
